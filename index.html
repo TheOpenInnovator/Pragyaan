@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPSC Master - Advanced Quiz Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --accent: #dc2626;
+            --warning: #d97706;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border: #334155;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-card);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .textarea-field {
+            min-height: 200px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-error {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .quiz-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+
+        @media (max-width: 1024px) {
+            .quiz-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .question-navigator {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            aspect-ratio: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .nav-btn.answered {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .nav-btn.marked {
+            background: var(--warning);
+            color: white;
+            border-color: var(--warning);
+        }
+
+        .nav-btn.current {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .nav-btn.incorrect {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        .question-area {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+        }
+
+        .question-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .question-stem {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .option input[type="radio"] {
+            margin-top: 2px;
+        }
+
+        .question-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer.critical {
+            color: var(--error);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .results-section {
+            margin-top: 30px;
+        }
+
+        .question-review {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .question-review.correct {
+            border-left: 4px solid var(--success);
+        }
+
+        .question-review.incorrect {
+            border-left: 4px solid var(--error);
+        }
+
+        .question-review.skipped {
+            border-left: 4px solid var(--warning);
+        }
+
+        .rationale {
+            background: var(--bg-dark);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .source-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-warning {
+            background: rgba(217, 119, 6, 0.2);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .schema-template {
+            background: var(--bg-dark);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .summary-download {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-download:hover {
+            background: #047857;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ UPSC Master</h1>
+            <p>Advanced Quiz Platform for Prelims & Mains Preparation</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="upload">📤 Dataset Upload</button>
+            <button class="tab" data-tab="quiz">📝 Quiz Practice</button>
+            <button class="tab" data-tab="results">📊 Results & Analytics</button>
+            <button class="tab" data-tab="schema">⚙️ Schema Helper</button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div class="tab-content active" id="upload">
+            <div class="card">
+                <h3>Import Quiz Dataset</h3>
+                <div class="input-group">
+                    <label>Upload JSON File</label>
+                    <input type="file" class="input-field" id="fileInput" accept=".json">
+                </div>
+                <div class="input-group">
+                    <label>Or Paste JSON Data</label>
+                    <textarea class="input-field textarea-field" id="jsonInput" placeholder="Paste your JSON dataset here..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="validateData">🔍 Validate & Load</button>
+                    <button class="btn btn-secondary" id="clearData">🗑️ Clear</button>
+                </div>
+                <div id="validationMessage"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Tab -->
+        <div class="tab-content" id="quiz">
+            <div id="quizNotLoaded" class="card">
+                <h3>No Quiz Loaded</h3>
+                <p>Please upload a valid JSON dataset first to start practicing.</p>
+            </div>
+            
+            <div id="quizInterface" class="hidden">
+                <div class="card">
+                    <div class="search-filter">
+                        <input type="text" class="input-field search-input" id="questionSearch" placeholder="🔍 Search questions...">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All Questions</option>
+                            <option value="answered">Answered</option>
+                            <option value="unanswered">Unanswered</option>
+                            <option value="marked">Marked for Review</option>
+                        </select>
+                        <select class="filter-select" id="difficultyFilter">
+                            <option value="all">All Difficulty</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="quiz-controls">
+                        <button class="btn btn-success" id="startQuiz">🚀 Start Quiz</button>
+                        <button class="btn btn-warning" id="pauseQuiz" style="display:none;">⏸️ Pause</button>
+                        <button class="btn btn-primary" id="resumeQuiz" style="display:none;">▶️ Resume</button>
+                        <button class="btn btn-error" id="submitQuiz" style="display:none;">📤 Submit Quiz</button>
+                    </div>
+                </div>
+
+                <div id="quizStarted" class="hidden">
+                    <div class="quiz-layout">
+                        <div class="question-navigator">
+                            <div class="timer" id="timer">⏰ 00:00:00</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p><strong>Question Navigator</strong></p>
+                            <div class="nav-grid" id="navGrid"></div>
+                            <div style="margin-top: 15px; font-size: 12px;">
+                                <div style="color: var(--success);">● Answered</div>
+                                <div style="color: var(--warning);">● Marked</div>
+                                <div style="color: var(--text-secondary);">● Not Attempted</div>
+                            </div>
+                        </div>
+
+                        <div class="question-area">
+                            <div class="question-header">
+                                <div>
+                                    <span id="questionCounter">Question 1 of 10</span>
+                                    <span id="questionTags"></span>
+                                </div>
+                                <div id="timerDisplay" class="timer">⏰ 00:00:00</div>
+                            </div>
+                            
+                            <div class="question-content">
+                                <div class="question-stem" id="questionStem"></div>
+                                <div class="options" id="optionsContainer"></div>
+                            </div>
+                            
+                            <div class="question-footer">
+                                <div>
+                                    <button class="btn btn-secondary" id="prevQuestion">← Previous</button>
+                                    <button class="btn btn-secondary" id="nextQuestion">Next →</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-warning" id="markReview">⭐ Mark for Review</button>
+                                    <button class="btn btn-primary" id="clearResponse">🗑️ Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div class="tab-content" id="results">
+            <div id="resultsNotAvailable" class="card">
+                <h3>No Results Available</h3>
+                <p>Complete a quiz to view detailed results and analytics.</p>
+            </div>
+
+            <div id="resultsInterface" class="hidden">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="finalScore" style="color: var(--primary);">0</div>
+                        <div class="stat-label">Final Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="accuracy" style="color: var(--success);">0%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="timeTaken" style="color: var(--warning);">0m</div>
+                        <div class="stat-label">Time Taken</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalQuestions" style="color: var(--secondary);">0</div>
+                        <div class="stat-label">Total Questions</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Performance Analysis</h3>
+                    <div id="performanceChart"></div>
+                    <button class="btn btn-primary" id="exportResults">📊 Export Results</button>
+                    <button class="summary-download" id="downloadSummary">📁 Download Summary PDF</button>
+                </div>
+
+                <div class="results-section">
+                    <h3>Question Review</h3>
+                    <div id="questionReviews"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schema Tab -->
+        <div class="tab-content" id="schema">
+            <div class="card">
+                <h3>Enhanced JSON Schema Template</h3>
+                <p>Use this enhanced schema for creating comprehensive quiz datasets:</p>
+                <div class="schema-template" id="schemaTemplate"></div>
+                <button class="btn btn-primary" id="downloadSchema">💾 Download Schema Template</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class UPSCQuizPlatform {
+            constructor() {
+                this.currentDataset = null;
+                this.currentQuestionIndex = 0;
+                this.userAnswers = {};
+                this.markedQuestions = new Set();
+                this.quizStartTime = null;
+                this.timer = null;
+                this.quizResults = null;
+                this.isQuizActive = false;
+                this.isPaused = false;
+                
+                this.initializeEventListeners();
+                this.loadFromStorage();
+                this.renderSchemaTemplate();
+            }
+
+            initializeEventListeners() {
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+
+                // File upload
+                document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileUpload(e));
+                
+                // Data validation and loading
+                document.getElementById('validateData').addEventListener('click', () => this.validateAndLoadData());
+                document.getElementById('clearData').addEventListener('click', () => this.clearData());
+
+                // Quiz controls
+                document.getElementById('startQuiz').addEventListener('click', () => this.startQuiz());
+                document.getElementById('pauseQuiz').addEventListener('click', () => this.pauseQuiz());
+                document.getElementById('resumeQuiz').addEventListener('click', () => this.resumeQuiz());
+                document.getElementById('submitQuiz').addEventListener('click', () => this.submitQuiz());
+
+                // Question navigation
+                document.getElementById('prevQuestion').addEventListener('click', () => this.navigateQuestion(-1));
+                document.getElementById('nextQuestion').addEventListener('click', () => this.navigateQuestion(1));
+                document.getElementById('markReview').addEventListener('click', () => this.toggleMarkReview());
+                document.getElementById('clearResponse').addEventListener('click', () => this.clearResponse());
+
+                // Filters and search
+                document.getElementById('questionSearch').addEventListener('input', () => this.applyFilters());
+                document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('difficultyFilter').addEventListener('change', () => this.applyFilters());
+
+                // Export functions
+                document.getElementById('exportResults').addEventListener('click', () => this.exportResults());
+                document.getElementById('downloadSchema').addEventListener('click', () => this.downloadSchemaTemplate());
+                document.getElementById('downloadSummary').addEventListener('click', () => this.downloadSummaryPDF());
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            }
+
+            async handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const text = await file.text();
+                    document.getElementById('jsonInput').value = text;
+                }
+            }
+
+            validateAndLoadData() {
+                const jsonText = document.getElementById('jsonInput').value.trim();
+                if (!jsonText) {
+                    this.showMessage('Please provide JSON data', 'error');
+                    return;
+                }
+
+                try {
+                    const data = JSON.parse(jsonText);
+                    if (this.validateSchema(data)) {
+                        this.currentDataset = data;
+                        this.saveToStorage();
+                        this.initializeQuiz();
+                        this.showMessage('Dataset loaded successfully!', 'success');
+                        this.switchTab('quiz');
+                    }
+                } catch (error) {
+                    this.showMessage('Invalid JSON format: ' + error.message, 'error');
+                }
+            }
+
+            validateSchema(data) {
+                const requiredFields = ['schema', 'quiz', 'questions'];
+                const missingFields = requiredFields.filter(field => !data[field]);
+                
+                if (missingFields.length > 0) {
+                    this.showMessage(`Missing required fields: ${missingFields.join(', ')}`, 'error');
+                    return false;
+                }
+
+                if (!Array.isArray(data.questions) || data.questions.length === 0) {
+                    this.showMessage('Questions array is empty or invalid', 'error');
+                    return false;
+                }
+
+                // Validate question structure
+                for (let i = 0; i < data.questions.length; i++) {
+                    const question = data.questions[i];
+                    const requiredQuestionFields = ['id', 'stem', 'options', 'answer'];
+                    const missingQuestionFields = requiredQuestionFields.filter(field => !question[field]);
+                    
+                    if (missingQuestionFields.length > 0) {
+                        this.showMessage(`Question ${i + 1} missing fields: ${missingQuestionFields.join(', ')}`, 'error');
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            initializeQuiz() {
+                document.getElementById('quizNotLoaded').classList.add('hidden');
+                document.getElementById('quizInterface').classList.remove('hidden');
+                this.generateNavigationGrid();
+            }
+
+            generateNavigationGrid() {
+                const navGrid = document.getElementById('navGrid');
+                navGrid.innerHTML = '';
+                
+                this.currentDataset.questions.forEach((_, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'nav-btn';
+                    btn.textContent = index + 1;
+                    btn.addEventListener('click', () => this.jumpToQuestion(index));
+                    navGrid.appendChild(btn);
+                });
+            }
+
+            startQuiz() {
+                this.isQuizActive = true;
+                this.quizStartTime = Date.now();
+                this.startTimer();
+                
+                document.getElementById('startQuiz').style.display = 'none';
+                document.getElementById('pauseQuiz').style.display = 'inline-block';
+                document.getElementById('submitQuiz').style.display = 'inline-block';
+                document.getElementById('quizStarted').classList.remove('hidden');
+                
+                this.displayQuestion(0);
+            }
+
+            startTimer() {
+                const timeLimit = this.currentDataset.quiz.config.time_limit_minutes * 60;
+                let elapsed = 0;
+                
+                this.timer = setInterval(() => {
+                    if (this.isPaused) return;
+                    
+                    elapsed++;
+                    const remaining = timeLimit - elapsed;
+                    
+                    if (remaining <= 0) {
+                        this.submitQuiz();
+                        return;
+                    }
+                    
+                    this.updateTimerDisplay(remaining);
+                    
+                    if (remaining <= 300) { // Last 5 minutes
+                        document.getElementById('timer').classList.add('critical');
+                        document.getElementById('timerDisplay').classList.add('critical');
+                    }
+                }, 1000);
+            }
+
+            updateTimerDisplay(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                document.getElementById('timer').innerHTML = `⏰ ${timeString}`;
+                document.getElementById('timerDisplay').innerHTML = `⏰ ${timeString}`;
+            }
+
+            pauseQuiz() {
+                this.isPaused = true;
+                document.getElementById('pauseQuiz').style.display = 'none';
+                document.getElementById('resumeQuiz').style.display = 'inline-block';
+            }
+
+            resumeQuiz() {
+                this.isPaused = false;
+                document.getElementById('resumeQuiz').style.display = 'none';
+                document.getElementById('pauseQuiz').style.display = 'inline-block';
+            }
+
+            displayQuestion(index) {
+                this.currentQuestionIndex = index;
+                const question = this.currentDataset.questions[index];
+                
+                // Update question counter
+                document.getElementById('questionCounter').textContent = `Question ${index + 1} of ${this.currentDataset.questions.length}`;
+                
+                // Update tags
+                const tags = question.topic_tags ? question.topic_tags.join(', ') : '';
+                document.getElementById('questionTags').innerHTML = tags ? `<span style="font-size: 12px; color: var(--text-secondary);">Topics: ${tags}</span>` : '';
+                
+                // Display question stem
+                document.getElementById('questionStem').textContent = question.stem;
+                
+                // Display options
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                
+                question.options.forEach(option => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.innerHTML = `
+                        <input type="radio" name="question_${question.id}" value="${option.id}" id="option_${option.id}">
+                        <label for="option_${option.id}" style="flex: 1; cursor: pointer;">${option.id}) ${option.text}</label>
+                    `;
+                    
+                    optionDiv.addEventListener('click', () => {
+                        const radio = optionDiv.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        this.selectOption(question.id, option.id);
+                    });
+                    
+                    optionsContainer.appendChild(optionDiv);
+                });
+                
+                // Restore previous answer if exists
+                if (this.userAnswers[question.id]) {
+                    const selectedOption = document.querySelector(`input[name="question_${question.id}"][value="${this.userAnswers[question.id]}"]`);
+                    if (selectedOption) {
+                        selectedOption.checked = true;
+                        selectedOption.closest('.option').classList.add('selected');
+                    }
+                }
+                
+                // Update mark for review button
+                const markBtn = document.getElementById('markReview');
+                if (this.markedQuestions.has(question.id)) {
+                    markBtn.textContent = '⭐ Unmark Review';
+                    markBtn.classList.add('btn-warning');
+                } else {
+                    markBtn.textContent = '⭐ Mark for Review';
+                    markBtn.classList.remove('btn-warning');
+                }
+                
+                // Update navigation
+                this.updateNavigationButtons();
+                this.updateNavigationGrid();
+                this.updateProgress();
+            }
+
+            selectOption(questionId, optionId) {
+                this.userAnswers[questionId] = optionId;
+                
+                // Update visual selection
+                document.querySelectorAll(`input[name="question_${questionId}"]`).forEach(radio => {
+                    radio.closest('.option').classList.remove('selected');
+                });
+                
+                const selectedOption = document.querySelector(`input[name="question_${questionId}"][value="${optionId}"]`);
+                if (selectedOption) {
+                    selectedOption.closest('.option').classList.add('selected');
+                }
+                
+                this.updateNavigationGrid();
+                this.saveToStorage();
+            }
+
+            navigateQuestion(direction) {
+                const newIndex = this.currentQuestionIndex + direction;
+                if (newIndex >= 0 && newIndex < this.currentDataset.questions.length) {
+                    this.displayQuestion(newIndex);
+                }
+            }
+
+            jumpToQuestion(index) {
+                this.displayQuestion(index);
+            }
+
+            toggleMarkReview() {
+                const currentQuestion = this.currentDataset.questions[this.currentQuestionIndex];
+                
+                if (this.markedQuestions.has(currentQuestion.id)) {
+                    this.markedQuestions.delete(currentQuestion.id);
+                } else {
+                    this.markedQuestions.add(currentQuestion.id);
+                }
+                
+                this.displayQuestion(this.currentQuestionIndex);
+                this.saveToStorage();
+            }
+
+            clearResponse() {
+                const currentQuestion = this.currentDataset.questions[this.currentQuestionIndex];
+                delete this.userAnswers[currentQuestion.id];
+                
+                // Clear visual selection
+                document.querySelectorAll(`input[name="question_${currentQuestion.id}"]`).forEach(radio => {
+                    radio.checked = false;
+                    radio.closest('.option').classList.remove('selected');
+                });
+                
+                this.updateNavigationGrid();
+                this.saveToStorage();
+            }
+
+            updateNavigationButtons() {
+                document.getElementById('prevQuestion').disabled = this.currentQuestionIndex === 0;
+                document.getElementById('nextQuestion').disabled = this.currentQuestionIndex === this.currentDataset.questions.length - 1;
+            }
+
+            updateNavigationGrid() {
+                const navButtons = document.querySelectorAll('.nav-btn');
+                navButtons.forEach((btn, index) => {
+                    const question = this.currentDataset.questions[index];
+                    btn.classList.remove('answered', 'marked', 'current', 'incorrect');
+                    
+                    if (index === this.currentQuestionIndex) {
+                        btn.classList.add('current');
+                    } else if (this.userAnswers[question.id]) {
+                        btn.classList.add('answered');
+                    }
+                    
+                    if (this.markedQuestions.has(question.id)) {
+                        btn.classList.add('marked');
+                    }
+                    
+                    // Show incorrect answers after submission
+                    if (this.quizResults && this.userAnswers[question.id] !== question.answer) {
+                        btn.classList.add('incorrect');
+                    }
+                });
+            }
+
+            updateProgress() {
+                const answered = Object.keys(this.userAnswers).length;
+                const total = this.currentDataset.questions.length;
+                const percentage = (answered / total) * 100;
+                document.getElementById('progressFill').style.width = `${percentage}%`;
+            }
+
+            applyFilters() {
+                const searchTerm = document.getElementById('questionSearch').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+                const difficultyFilter = document.getElementById('difficultyFilter').value;
+                
+                // This would filter the question list in a more advanced implementation
+                // For now, it's a placeholder for the filtering functionality
+                console.log('Applying filters:', { searchTerm, statusFilter, difficultyFilter });
+            }
+
+            submitQuiz() {
+                if (!confirm('Are you sure you want to submit the quiz? You cannot change answers after submission.')) {
+                    return;
+                }
+                
+                clearInterval(this.timer);
+                this.isQuizActive = false;
+                
+                this.calculateResults();
+                this.displayResults();
+                this.switchTab('results');
+            }
+
+            calculateResults() {
+                const config = this.currentDataset.quiz.config;
+                const marksPerQuestion = config.marks_per_question || 2;
+                const negativeMarking = config.negative_marking || { type: 'fraction', value: 0.33 };
+                
+                let correct = 0;
+                let incorrect = 0;
+                let skipped = 0;
+                let totalScore = 0;
+                
+                const questionResults = [];
+                
+                this.currentDataset.questions.forEach(question => {
+                    const userAnswer = this.userAnswers[question.id];
+                    const isCorrect = userAnswer === question.answer;
+                    
+                    let questionScore = 0;
+                    let status = 'skipped';
+                    
+                    if (userAnswer) {
+                        if (isCorrect) {
+                            questionScore = marksPerQuestion;
+                            correct++;
+                            status = 'correct';
+                        } else {
+                            questionScore = -marksPerQuestion * negativeMarking.value;
+                            incorrect++;
+                            status = 'incorrect';
+                        }
+                    } else {
+                        skipped++;
+                    }
+                    
+                    totalScore += questionScore;
+                    
+                    questionResults.push({
+                        question,
+                        userAnswer,
+                        isCorrect,
+                        status,
+                        score: questionScore
+                    });
+                });
+                
+                const maxScore = this.currentDataset.questions.length * marksPerQuestion;
+                const accuracy = correct / this.currentDataset.questions.length * 100;
+                const timeTaken = this.quizStartTime ? Date.now() - this.quizStartTime : 0;
+                
+                this.quizResults = {
+                    totalScore,
+                    maxScore,
+                    correct,
+                    incorrect,
+                    skipped,
+                    accuracy,
+                    timeTaken,
+                    questionResults
+                };
+                
+                this.saveToStorage();
+            }
+
+            displayResults() {
+                document.getElementById('resultsNotAvailable').classList.add('hidden');
+                document.getElementById('resultsInterface').classList.remove('hidden');
+                
+                const results = this.quizResults;
+                
+                // Update stats
+                document.getElementById('finalScore').textContent = `${results.totalScore}/${results.maxScore}`;
+                document.getElementById('accuracy').textContent = `${results.accuracy.toFixed(1)}%`;
+                document.getElementById('timeTaken').textContent = this.formatTime(results.timeTaken);
+                document.getElementById('totalQuestions').textContent = this.currentDataset.questions.length;
+                
+                // Display question reviews
+                this.displayQuestionReviews();
+                
+                // Show navigation grid with results
+                this.updateNavigationGrid();
+            }
+
+            displayQuestionReviews() {
+                const container = document.getElementById('questionReviews');
+                container.innerHTML = '';
+                
+                this.quizResults.questionResults.forEach((result, index) => {
+                    const reviewDiv = document.createElement('div');
+                    reviewDiv.className = `question-review ${result.status}`;
+                    
+                    const statusIcon = {
+                        correct: '✅',
+                        incorrect: '❌',
+                        skipped: '⏭️'
+                    };
+                    
+                    const userAnswerText = result.userAnswer ? 
+                        result.question.options.find(opt => opt.id === result.userAnswer)?.text || result.userAnswer :
+                        'Not answered';
+                    
+                    const correctAnswerText = result.question.options.find(opt => opt.id === result.question.answer)?.text || result.question.answer;
+                    
+                    reviewDiv.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4>${statusIcon[result.status]} Question ${index + 1}</h4>
+                            <span style="font-weight: bold; color: ${result.score >= 0 ? 'var(--success)' : 'var(--error)'};">
+                                ${result.score >= 0 ? '+' : ''}${result.score} marks
+                            </span>
+                        </div>
+                        <div style="margin-bottom: 15px;">${result.question.stem}</div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Your Answer:</strong> ${userAnswerText}
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <strong>Correct Answer:</strong> ${correctAnswerText}
+                        </div>
+                        ${result.question.rationale ? `
+                            <div class="rationale">
+                                <strong>📖 Explanation:</strong><br>
+                                ${result.question.rationale}
+                            </div>
+                        ` : ''}
+                        ${result.question.detailed_explanation ? `
+                            <div class="rationale">
+                                <strong>📚 Detailed Context:</strong><br>
+                                ${result.question.detailed_explanation}
+                            </div>
+                        ` : ''}
+                        ${result.question.source ? `
+                            <div class="source-info">
+                                <strong>Source:</strong> ${result.question.source.citation || 'Not specified'}
+                                ${result.question.source.page ? ` (Page: ${result.question.source.page})` : ''}
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    container.appendChild(reviewDiv);
+                });
+            }
+
+            downloadSummaryPDF() {
+                if (!this.quizResults) {
+                    alert('No quiz results available to download.');
+                    return;
+                }
+
+                // Create comprehensive summary content
+                let summaryContent = `UPSC Quiz Summary Report\n`;
+                summaryContent += `================================\n\n`;
+                summaryContent += `Quiz: ${this.currentDataset.quiz.title}\n`;
+                summaryContent += `Description: ${this.currentDataset.quiz.description || 'N/A'}\n`;
+                summaryContent += `Date: ${new Date().toLocaleDateString()}\n\n`;
+                
+                summaryContent += `PERFORMANCE OVERVIEW\n`;
+                summaryContent += `===================\n`;
+                summaryContent += `Final Score: ${this.quizResults.totalScore}/${this.quizResults.maxScore}\n`;
+                summaryContent += `Accuracy: ${this.quizResults.accuracy.toFixed(1)}%\n`;
+                summaryContent += `Correct: ${this.quizResults.correct}\n`;
+                summaryContent += `Incorrect: ${this.quizResults.incorrect}\n`;
+                summaryContent += `Skipped: ${this.quizResults.skipped}\n`;
+                summaryContent += `Time Taken: ${this.formatTime(this.quizResults.timeTaken)}\n\n`;
+                
+                summaryContent += `DETAILED QUESTION ANALYSIS\n`;
+                summaryContent += `==========================\n\n`;
+                
+                this.quizResults.questionResults.forEach((result, index) => {
+                    summaryContent += `Question ${index + 1}: ${result.status.toUpperCase()}\n`;
+                    summaryContent += `${'-'.repeat(50)}\n`;
+                    summaryContent += `${result.question.stem}\n\n`;
+                    
+                    result.question.options.forEach(option => {
+                        const marker = option.id === result.question.answer ? '[CORRECT] ' : 
+                                     option.id === result.userAnswer ? '[YOUR ANSWER] ' : '';
+                        summaryContent += `${marker}${option.id}) ${option.text}\n`;
+                    });
+                    
+                    if (result.question.rationale) {
+                        summaryContent += `\nExplanation: ${result.question.rationale}\n`;
+                    }
+                    
+                    if (result.question.detailed_explanation) {
+                        summaryContent += `\nDetailed Context: ${result.question.detailed_explanation}\n`;
+                    }
+                    
+                    if (result.question.source) {
+                        summaryContent += `\nSource: ${result.question.source.citation}`;
+                        if (result.question.source.page) {
+                            summaryContent += ` (Page: ${result.question.source.page})`;
+                        }
+                        summaryContent += `\n`;
+                    }
+                    
+                    if (result.question.topic_tags) {
+                        summaryContent += `\nTopics: ${result.question.topic_tags.join(', ')}\n`;
+                    }
+                    
+                    summaryContent += `\nScore: ${result.score >= 0 ? '+' : ''}${result.score} marks\n\n`;
+                });
+                
+                // Key Focus Areas
+                summaryContent += `KEY FOCUS AREAS FOR REVISION\n`;
+                summaryContent += `============================\n`;
+                
+                const incorrectTopics = {};
+                this.quizResults.questionResults
+                    .filter(result => result.status === 'incorrect')
+                    .forEach(result => {
+                        if (result.question.topic_tags) {
+                            result.question.topic_tags.forEach(topic => {
+                                incorrectTopics[topic] = (incorrectTopics[topic] || 0) + 1;
+                            });
+                        }
+                    });
+                
+                Object.entries(incorrectTopics)
+                    .sort(([,a], [,b]) => b - a)
+                    .forEach(([topic, count]) => {
+                        summaryContent += `• ${topic}: ${count} incorrect answer(s)\n`;
+                    });
+                
+                if (Object.keys(incorrectTopics).length === 0) {
+                    summaryContent += `Great job! No specific areas need immediate attention.\n`;
+                }
+                
+                // Create and download the file
+                const blob = new Blob([summaryContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `UPSC_Quiz_Summary_${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showMessage('Summary downloaded successfully!', 'success');
+            }
+
+            exportResults() {
+                if (!this.quizResults) {
+                    alert('No results to export.');
+                    return;
+                }
+                
+                const exportData = {
+                    quiz: this.currentDataset.quiz,
+                    results: this.quizResults,
+                    exportDate: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `quiz_results_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            formatTime(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                
+                if (hours > 0) {
+                    return `${hours}h ${minutes % 60}m`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${seconds % 60}s`;
+                } else {
+                    return `${seconds}s`;
+                }
+            }
+
+            handleKeyboardShortcuts(event) {
+                if (!this.isQuizActive) return;
+                
+                switch (event.key) {
+                    case 'ArrowLeft':
+                        event.preventDefault();
+                        this.navigateQuestion(-1);
+                        break;
+                    case 'ArrowRight':
+                        event.preventDefault();
+                        this.navigateQuestion(1);
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                        if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
+                            event.preventDefault();
+                            const optionId = ['A', 'B', 'C', 'D'][parseInt(event.key) - 1];
+                            const currentQuestion = this.currentDataset.questions[this.currentQuestionIndex];
+                            const option = currentQuestion.options.find(opt => opt.id === optionId);
+                            if (option) {
+                                this.selectOption(currentQuestion.id, optionId);
+                                document.querySelector(`input[value="${optionId}"]`).checked = true;
+                                this.displayQuestion(this.currentQuestionIndex);
+                            }
+                        }
+                        break;
+                    case 'm':
+                    case 'M':
+                        if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
+                            event.preventDefault();
+                            this.toggleMarkReview();
+                        }
+                        break;
+                }
+            }
+
+            renderSchemaTemplate() {
+                const enhancedSchema = {
+                    "schema": "upsc-advanced-v2",
+                    "quiz": {
+                        "title": "Sample UPSC Quiz",
+                        "description": "Comprehensive quiz with enhanced features",
+                        "type": "prelims", // or "mains"
+                        "config": {
+                            "marks_per_question": 2,
+                            "negative_marking": { "type": "fraction", "value": 0.33 },
+                            "time_limit_minutes": 120,
+                            "shuffle_questions": true,
+                            "shuffle_options": true,
+                            "show_explanations": "after_submit",
+                            "difficulty_distribution": {
+                                "Easy": 30,
+                                "Moderate": 50,
+                                "Hard": 20
+                            }
+                        }
+                    },
+                    "questions": [
+                        {
+                            "id": "Q1",
+                            "stem": "Consider the following statements about the Indian Constitution:\\n1. Statement one\\n2. Statement two\\nWhich of the statements given above is/are correct?",
+                            "options": [
+                                { "id": "A", "text": "1 only" },
+                                { "id": "B", "text": "2 only" },
+                                { "id": "C", "text": "Both 1 and 2" },
+                                { "id": "D", "text": "Neither 1 nor 2" }
+                            ],
+                            "answer": "C",
+                            "rationale": "Brief explanation of the correct answer and why other options are incorrect.",
+                            "detailed_explanation": "Comprehensive context explaining the topic in detail, including background information, related concepts, and why this knowledge is important for UPSC preparation.",
+                            "source": {
+                                "citation": "Indian Polity by M. Laxmikant, Chapter 5",
+                                "type": "book",
+                                "page": "45-47",
+                                "url": "optional_reference_url",
+                                "accessed_date": "2025-01-15"
+                            },
+                            "topic_tags": ["Polity", "Constitution", "Fundamental Rights"],
+                            "difficulty": "Moderate",
+                            "previous_year": {
+                                "appeared_in": ["UPSC Prelims 2020"],
+                                "frequency": "high"
+                            },
+                            "related_questions": ["Q5", "Q12"],
+                            "estimated_time": 90,
+                            "keywords": ["Constitution", "Article", "Amendment"],
+                            "mains_relevance": {
+                                "applicable": true,
+                                "gs_paper": "GS2",
+                                "topic": "Constitutional provisions"
+                            }
+                        }
+                    ]
+                };
+                
+                document.getElementById('schemaTemplate').textContent = JSON.stringify(enhancedSchema, null, 2);
+            }
+
+            downloadSchemaTemplate() {
+                const schemaText = document.getElementById('schemaTemplate').textContent;
+                const blob = new Blob([schemaText], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'upsc_quiz_schema_template.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            saveToStorage() {
+                const data = {
+                    dataset: this.currentDataset,
+                    answers: this.userAnswers,
+                    markedQuestions: Array.from(this.markedQuestions),
+                    currentIndex: this.currentQuestionIndex,
+                    results: this.quizResults,
+                    quizStartTime: this.quizStartTime,
+                    isQuizActive: this.isQuizActive
+                };
+                
+                localStorage.setItem('upsc_quiz_data', JSON.stringify(data));
+            }
+
+            loadFromStorage() {
+                const stored = localStorage.getItem('upsc_quiz_data');
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        this.currentDataset = data.dataset;
+                        this.userAnswers = data.answers || {};
+                        this.markedQuestions = new Set(data.markedQuestions || []);
+                        this.currentQuestionIndex = data.currentIndex || 0;
+                        this.quizResults = data.results;
+                        this.quizStartTime = data.quizStartTime;
+                        this.isQuizActive = data.isQuizActive || false;
+                        
+                        if (this.currentDataset) {
+                            this.initializeQuiz();
+                            if (this.quizResults) {
+                                this.displayResults();
+                                this.switchTab('results');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading from storage:', error);
+                    }
+                }
+            }
+
+            clearData() {
+                if (confirm('Are you sure you want to clear all data? This will remove the current quiz and all progress.')) {
+                    localStorage.removeItem('upsc_quiz_data');
+                    location.reload();
+                }
+            }
+
+            showMessage(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type}`;
+                alertDiv.innerHTML = `
+                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
+                    ${message}
+                `;
+                
+                const container = document.getElementById('validationMessage');
+                container.innerHTML = '';
+                container.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new UPSCQuizPlatform();
+        });
+    </script>
+</body>
+</html>
